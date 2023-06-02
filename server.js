@@ -34,3 +34,36 @@ app.post('/api/notes', function(req, res) {
     })
 });
 
+app.delete('/api/notes/:id', function(req, res) {
+    const idDelete = parseInt(req.params.id);
+    readFileAsync('./Develop/db/db.json', 'utf8').then(function(data) {
+        const notes = [].concat(JSON.parse(data));
+        const newNotes = []
+        for (let i = 0; i<notes.length; i++) {
+            if(idDelete !== notes[i].id) {
+                newNotes.push(notes[i])
+            }
+        }
+        return newNotes
+    }).then(function(notes) {
+        writeFileAsync('./Develop/db/db.json', JSON.stringify(notes))
+        res.send('SAVED!')
+    })
+})
+
+app.get('/notes', function(req, res) {
+    res.sendFile(path.join(__dirname, './Develop/public/notes.html'));
+});
+
+app.get('/', function(req, res) {
+    res.sendFile(path.join(__dirname, './Develop/public/index.html'));
+})
+
+app.get('*', function(req, res) {
+    res.sendFile(path.join(__dirname, './Develop/public/index.html'));
+})
+
+
+app.listen(PORT, function() {
+    console.log('app listening on PORT' + PORT);
+});
